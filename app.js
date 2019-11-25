@@ -7,7 +7,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-const dbUpdater = require('./Database/DatabaseUpdater');
+// const dbUpdater = require('./Database/DatabaseUpdater');
 
 var indexRouter = require('./routes/index');
 
@@ -43,7 +43,7 @@ app.use(function(err, req, res, next) {
 });
 
 
-
-dbUpdater.update();
+//Using in desktop 
+// dbUpdater.update();
 
 module.exports = app;
