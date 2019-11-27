@@ -50,6 +50,7 @@ router.get('/complete/bundle', async function (req, res, next) {
     operations: tickets.filter(t => t.bundle == b.bundle).map(t => ({
       id: t.operation,
       name: t.operation,
+      isFinished: t.empnum > 0,
       ticket: {
         id: t.ticket,
         operation: t.operation,
