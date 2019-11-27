@@ -47,11 +47,16 @@ async function get(value) {
         let sqlQuery = "SELECT * FROM public.get_employee WHERE empnum = $1 LIMIT 1;";
         let values = [value];
         const obj = await db.execute(pool, sqlQuery, values);
-        try {
-            resolve(obj[0]);
-        } catch (error) {
-            resolve(obj);
+        if(obj.length > 0){
+            try {
+                resolve(obj[0]);
+            } catch (error) {
+                resolve(obj);
+            }
+        }else{
+            resolve({});
         }
+       
     });
 }
 
