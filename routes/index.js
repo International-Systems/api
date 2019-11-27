@@ -56,6 +56,7 @@ router.get('/complete/bundle', async function (req, res, next) {
         operation: t.operation,
         bundle: t.bundle,
         time: t.time,
+        earn: t.standard * t.quantity,
         standard: t.standard,
         quantity: t.quantity
       }
