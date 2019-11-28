@@ -47,7 +47,7 @@ router.get('/complete/bundle', async function (req, res, next) {
   res.send(bundle.map((b) => ({
     id: b.bundle,
     name: b.bundle + " - " + b.quantity + "x [" + b.cut + " | " + b.style + " (" + b.size + ") " + b.color + "]",
-    operations: tickets.filter(t => t.bundle == b.bundle).map(t => ({
+    operations: tickets.filter(t => t.bundle == b.bundle && t.time > 0).map(t => ({
       id: t.operation,
       name: t.operation,
       isFinished: t.empnum > 0,
@@ -107,7 +107,7 @@ router.get('/auth', async function (req, res, next) {
 
 router.post('/scans', async function (req, res, next) {
   console.log(req.body);
-  
+
   res.send(await scansDAO.insertJSON(req.body));
 });
 
