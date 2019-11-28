@@ -105,6 +105,12 @@ router.get('/auth', async function (req, res, next) {
   res.send(await userDAO.auth(user.username, user.password));
 });
 
+router.post('/scans', async function (req, res, next) {
+  console.log(req.body);
+  
+  res.send(await scansDAO.insertJSON(req.body));
+});
+
 
 /* register ticket */
 router.get('/start_ticket/:empnum/:ticket', async function (req, res, next) {
