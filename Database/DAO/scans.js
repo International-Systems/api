@@ -38,7 +38,6 @@ async function insertJSON(json) {
         "INSERT INTO public.scans (empnum, ticket, start_time, end_time)" +
         " select p.empnum, p.ticket, p.start_time, p.end_time from aux_json l cross join lateral json_populate_recordset(null::scans, doc) as p"
         let values = [];
-        console.log(sqlQuery);
         resolve(await db.execute(pool, sqlQuery, values));
     });
 }

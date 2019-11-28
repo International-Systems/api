@@ -28,8 +28,6 @@ router.get('/employee/:empnum', async function (req, res, next) {
   res.send(employee);
 });
 
-
-
 /* OPERATION */
 router.get('/operation', async function (req, res, next) {
   res.send(await operationDAO.getAll());
