@@ -61,7 +61,7 @@ router.get('/complete/bundle', async function (req, res, next) {
         quantity: t.quantity
       }
     }))
-  }))
+  })).slice(0, 100)
   );
 });
 
