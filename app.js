@@ -6,6 +6,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const requestIp = require('request-ip');
+
 
 // const dbUpdater = require('./Database/DatabaseUpdater');
 
@@ -22,6 +24,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+//MW to get the IP
+app.use(requestIp.mw())
 
 app.use('/', indexRouter);
 

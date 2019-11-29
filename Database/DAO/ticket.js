@@ -14,10 +14,13 @@ module.exports = {
     get: async (value) => {
         return await get(value);
     },
+    getBundle: async (value) => {
+        return await getBundle(value);
+    },
     getAll: async () => {
         return await getAll();
     },
-    insertJSON: async(json) => {
+    insertJSON: async (json) => {
         return await insertJSON(json);
     }
 }
@@ -40,6 +43,16 @@ async function clear() {
     });
 }
 
+
+
+async function getBundle(value) {
+    return new Promise(async (resolve) => {
+        let sqlQuery = "SELECT * FROM public.ticket WHERE bundle = $1";
+        let values = [value];
+        const bundles = await db.execute(pool, sqlQuery, values);
+        resolve(bundles);
+    });
+}
 
 async function get(value) {
     return new Promise(async (resolve) => {
@@ -66,9 +79,9 @@ async function getAll() {
 
 async function insertJSON(json) {
     return new Promise(async (resolve) => {
-        let sqlQuery = `with aux_json (doc) as (values ('${JSON.stringify(json)}'::json)) ` + 
-        "INSERT INTO public.ticket(ticket, cut, seq, bundle, buncut, style, opstyseq, operation, section, quantity, standard, color, width, size, date, empnum, category, stdtime, \"time\", shade, numempl, tkttime)" +
-        " select p.* from aux_json l cross join lateral json_populate_recordset(null::ticket, doc) as p"
+        let sqlQuery = `with aux_json (doc) as (values ('${JSON.stringify(json)}'::json)) ` +
+            "INSERT INTO public.ticket(ticket, cut, seq, bundle, buncut, style, opstyseq, operation, section, quantity, standard, color, width, size, date, empnum, category, stdtime, \"time\", shade, numempl, tkttime)" +
+            " select p.* from aux_json l cross join lateral json_populate_recordset(null::ticket, doc) as p"
 
         let values = [];
         resolve(await db.execute(pool, sqlQuery, values));

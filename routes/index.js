@@ -1,3 +1,6 @@
+const geoip = require('geoip-lite');
+
+
 var express = require('express');
 var router = express.Router();
 
@@ -23,6 +26,11 @@ router.get('/employee', async function (req, res, next) {
 });
 
 router.get('/employee/:empnum', async function (req, res, next) {
+  const ip = req.connection.remoteAddress
+  console.log(ip);
+  var geo = geoip.lookup();
+  console.log(geo);
+
   let employee = await employeeDAO.get(req.params.empnum);
   employee["historic_earnings"] = await employeeDAO.getEarnings(req.params.empnum)
   res.send(employee);
@@ -38,8 +46,41 @@ router.get('/bundle', async function (req, res, next) {
   res.send(await bundleDAO.getAll());
 });
 
+
+router.get('/particle/bundle/:bundle', async function (req, res, next) {
+  const bundleID = req.params.bundle;
+  let tickets = await ticketDAO.getBundle(bundleID);
+
+  const operations = tickets.filter(t => t.bundle == bundleID && t.time > 0).map(t => ({
+    id: t.operation,
+    isFinished: t.empnum > 0,
+    ticket: {
+      id: t.ticket,
+      operation: t.operation,
+      bundle: t.bundle,
+      time: t.time,
+      earn: t.standard * t.quantity,
+      standard: t.standard,
+      quantity: t.quantity
+    }
+  }));
+  
+  res.send(operations);
+});
+
+
+router.get('/structure/bundle', async function (req, res, next) {
+  let bundle = await bundleDAO.getAll();
+  const bundleRes = bundle.map((b) => ({
+    id: b.bundle,
+    operations: []
+  }))
+
+  res.send(bundleRes);
+});
+
+
 router.get('/complete/bundle', async function (req, res, next) {
- 
   let [tickets, bundle] = await Promise.all([ticketDAO.getAll(),bundleDAO.getAll()]);
 
   const bundleRes = bundle.map((b) => ({
