@@ -58,7 +58,7 @@ async function get(value) {
 
 async function getAll() {
     return new Promise(async (resolve) => {
-        let sqlQuery = "SELECT * FROM public.bundle WHERE bundle in (SELECT bundle FROM public.ticket WHERE empnum IS NULL);";
+        let sqlQuery = "SELECT bundle,quantity,cut,style,size,color FROM public.bundle;";
         let values = [];
         resolve(await db.execute(pool, sqlQuery, values));
     });

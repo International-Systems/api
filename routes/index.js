@@ -39,15 +39,15 @@ router.get('/bundle', async function (req, res, next) {
 });
 
 router.get('/complete/bundle', async function (req, res, next) {
-  let tickets = await ticketDAO.getAll();
-  const bundle = await bundleDAO.getAll();
+ 
+  let [tickets, bundle] = await Promise.all([ticketDAO.getAll(),bundleDAO.getAll()]);
 
-  res.send(bundle.map((b) => ({
+  const bundleRes = bundle.map((b) => ({
     id: b.bundle,
-    name: b.bundle + " - " + b.quantity + "x [" + b.cut + " | " + b.style + " (" + b.size + ") " + b.color + "]",
+    // name: b.bundle + " - " + b.quantity + "x [" + b.cut + " | " + b.style + " (" + b.size + ") " + b.color + "]",
     operations: tickets.filter(t => t.bundle == b.bundle && t.time > 0).map(t => ({
       id: t.operation,
-      name: t.operation,
+      // name: t.operation,
       isFinished: t.empnum > 0,
       ticket: {
         id: t.ticket,
@@ -59,8 +59,9 @@ router.get('/complete/bundle', async function (req, res, next) {
         quantity: t.quantity
       }
     }))
-  })).slice(0, 100)
-  );
+  }))
+
+  res.send(bundleRes);
 });
 
 
