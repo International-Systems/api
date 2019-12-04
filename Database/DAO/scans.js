@@ -24,19 +24,33 @@ module.exports = {
     getEfficiency: async (empnum, ticket) => {
         return await getEfficiency(empnum, ticket);
     },
-    insertJSON: async(json) => {
+    insertJSON: async (json) => {
         return await insertJSON(json);
+    },
+    checkTickets: async (list) => {
+        let l_values = JSON.stringify(list).replace('[', '').replace(']', '');
+        return await checkTickets(l_values)
     }
 
 }
 
 
 
+async function checkTickets(val) {
+    return new Promise(async (resolve) => {
+        let sqlQuery = "SELECT ticket, empnum, 1 is_scanned FROM public.scans where ticket in (" + val + ")";
+        let values = [];
+        resolve(await db.execute(pool, sqlQuery, values));
+    });
+}
+
+
+
 async function insertJSON(json) {
     return new Promise(async (resolve) => {
-        let sqlQuery = `with aux_json (doc) as (values ('${JSON.stringify(json)}'::json)) ` + 
-        "INSERT INTO public.scans (empnum, ticket, start_time, end_time)" +
-        " select p.empnum, p.ticket, p.start_time, p.end_time from aux_json l cross join lateral json_populate_recordset(null::scans, doc) as p"
+        let sqlQuery = `with aux_json (doc) as (values ('${JSON.stringify(json)}'::json)) ` +
+            "INSERT INTO public.scans (empnum, ticket, start_time, end_time)" +
+            " select p.empnum, p.ticket, p.start_time, p.end_time from aux_json l cross join lateral json_populate_recordset(null::scans, doc) as p"
         let values = [];
         resolve(await db.execute(pool, sqlQuery, values));
     });
@@ -94,7 +108,7 @@ async function getEfficiency(empnum, ticket) {
         let sqlQuery = "SELECT * FROM public.scans_efficiency WHERE empnum = $1 AND ticket = $2 LIMIT 1;";
         let values = [empnum, ticket];
         const scans = await db.execute(pool, sqlQuery, values);
-       
+
 
         try {
             resolve(scans[0]);

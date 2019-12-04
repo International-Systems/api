@@ -59,12 +59,13 @@ router.get('/particle/bundle/:bundle', async function (req, res, next) {
       operation: t.operation,
       bundle: t.bundle,
       time: t.time,
+      empnum: t.empnum,
       earn: t.standard * t.quantity,
       standard: t.standard,
       quantity: t.quantity
     }
   }));
-  
+
   res.send(operations);
 });
 
@@ -81,7 +82,7 @@ router.get('/structure/bundle', async function (req, res, next) {
 
 
 router.get('/complete/bundle', async function (req, res, next) {
-  let [tickets, bundle] = await Promise.all([ticketDAO.getAll(),bundleDAO.getAll()]);
+  let [tickets, bundle] = await Promise.all([ticketDAO.getAll(), bundleDAO.getAll()]);
 
   const bundleRes = bundle.map((b) => ({
     id: b.bundle,
@@ -128,8 +129,8 @@ router.get('/complete/ticket', async function (req, res, next) {
   let tickets = await ticketDAO.getAll();
   let bundle = await bundleDAO.getAll();
   let operation = await operationDAO.getAll();
-  
-  for(let i = 0; i < tickets.length;i++){
+
+  for (let i = 0; i < tickets.length; i++) {
     tickets[i]._bundle = bundle.filter((b) => tickets[i].bundle == b.bundle);
     tickets[i]._operation = operation.filter((o) => tickets[i].operation == o.operation);
   }
@@ -146,9 +147,23 @@ router.get('/auth', async function (req, res, next) {
 });
 
 router.post('/scans', async function (req, res, next) {
-  console.log(req.body);
+  let scans = req.body;
+  const tickets = scans.map(s => s.ticket);
 
-  res.send(await scansDAO.insertJSON(req.body));
+  const invalidTickets = await scansDAO.checkTickets(tickets);
+
+  console.log(scans);
+  if(invalidTickets.length > 0){
+    scans = scans.filter(s => !invalidTickets.filter(i => i.ticket == s.ticket));
+  }
+  console.log(scans)
+
+
+  const resScans = await scansDAO.insertJSON(scans);
+  console.log(invalidTickets)
+
+  res.send(invalidTickets);
+
 });
 
 
