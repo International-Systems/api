@@ -35,7 +35,6 @@ module.exports = {
 }
 
 
-
 async function checkTickets(val) {
     return new Promise(async (resolve) => {
         let sqlQuery = "SELECT ticket, empnum, 1 is_scanned FROM public.scans where ticket in (" + val + ")";

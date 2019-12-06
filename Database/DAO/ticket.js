@@ -70,7 +70,7 @@ async function get(value) {
 
 async function getAll() {
     return new Promise(async (resolve) => {
-        let sqlQuery = "SELECT ticket,operation,bundle,time,quantity,standard,opstyseq FROM public.ticket ORDER BY bundle, opstyseq;";
+        let sqlQuery = "SELECT * FROM get_ticket ORDER BY bundle;";
         let values = [];
         resolve(await db.execute(pool, sqlQuery, values));
     });

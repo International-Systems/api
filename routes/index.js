@@ -53,16 +53,16 @@ router.get('/particle/bundle/:bundle', async function (req, res, next) {
 
   const operations = tickets.filter(t => t.bundle == bundleID && t.time > 0).map(t => ({
     id: t.operation,
-    isFinished: t.empnum > 0,
+    is_finished: t.is_finished,
+    finished_by: t.finished_by,
     ticket: {
       id: t.ticket,
       operation: t.operation,
       bundle: t.bundle,
       time: t.time,
-      empnum: t.empnum,
       earn: t.standard * t.quantity,
       standard: t.standard,
-      quantity: t.quantity
+      quantity: t.quantity,
     }
   }));
 
@@ -149,7 +149,6 @@ router.get('/auth', async function (req, res, next) {
 router.post('/scans', async function (req, res, next) {
   let scans = req.body;
   const tickets = scans.map(s => s.ticket);
-
   const invalidTickets = await scansDAO.checkTickets(tickets);
 
   console.log(scans);
