@@ -90,7 +90,7 @@ router.get('/complete/bundle', async function (req, res, next) {
     operations: tickets.filter(t => t.bundle == b.bundle && t.time > 0).map(t => ({
       id: t.operation,
       is_finished: t.is_finished,
-    finished_by: t.finished_by,
+      finished_by: t.finished_by,
       ticket: {
         id: t.ticket,
         operation: t.operation,
@@ -107,11 +107,19 @@ router.get('/complete/bundle', async function (req, res, next) {
 });
 
 
+
+
+
 router.get('/ticket', async function (req, res, next) {
   let tickets = await ticketDAO.getAll();
   res.send(tickets);
 });
 
+router.get('/ticket/:ticket', async function (req, res, next) {
+  const ticket = req.params.ticket;
+  const result = await ticketDAO.get(ticket);
+  res.send(result);
+});
 
 router.get('/compact/ticket', async function (req, res, next) {
   let tickets = await ticketDAO.getAll();

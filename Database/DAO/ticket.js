@@ -56,7 +56,7 @@ async function getBundle(value) {
 
 async function get(value) {
     return new Promise(async (resolve) => {
-        let sqlQuery = "SELECT * FROM public.ticket WHERE ticket = $1 LIMIT 1;";
+        let sqlQuery = "SELECT * FROM get_ticket WHERE ticket = $1 LIMIT 1;";
         let values = [value];
         const bundle = await db.execute(pool, sqlQuery, values);
         try {
