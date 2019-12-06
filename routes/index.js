@@ -89,8 +89,8 @@ router.get('/complete/bundle', async function (req, res, next) {
     // name: b.bundle + " - " + b.quantity + "x [" + b.cut + " | " + b.style + " (" + b.size + ") " + b.color + "]",
     operations: tickets.filter(t => t.bundle == b.bundle && t.time > 0).map(t => ({
       id: t.operation,
-      // name: t.operation,
-      isFinished: t.empnum > 0,
+      is_finished: t.is_finished,
+    finished_by: t.finished_by,
       ticket: {
         id: t.ticket,
         operation: t.operation,
