@@ -195,4 +195,12 @@ router.get('/scans/:empnum', async function (req, res, next) {
 });
 
 
+
+router.post('/update/employee', async function (req, res, next) {
+  let employee = req.body;
+  
+  console.log(employee);
+});
+
+
 module.exports = router;
