@@ -87,7 +87,7 @@ router.get('/complete/bundle', async function (req, res, next) {
   const bundleRes = bundle.map((b) => ({
     id: b.bundle,
     // name: b.bundle + " - " + b.quantity + "x [" + b.cut + " | " + b.style + " (" + b.size + ") " + b.color + "]",
-    operations: tickets.filter(t => t.bundle == b.bundle && t.time > 0).map(t => ({
+    operations: tickets.filter(t => t.bundle == b.bundle && t.time > 0 && !is_finished > 0).map(t => ({
       id: t.operation,
       is_finished: t.is_finished,
       finished_by: t.finished_by,
@@ -103,7 +103,9 @@ router.get('/complete/bundle', async function (req, res, next) {
     }))
   }))
 
-  res.send(bundleRes);
+
+
+  res.send(bundleRes.filter(b => b.operations.length > 0));
 });
 
 
