@@ -198,9 +198,13 @@ router.get('/scans/:empnum', async function (req, res, next) {
 
 router.post('/update/employee', async function (req, res, next) {
   let employee = req.body;
-  
-  console.log(employee);
-  res.send(employee)
+  try{
+    employeeDAO.updateConfig(employee);
+    res.send({success:true, employee})
+  }catch(e){
+    res.send({success:false, message: JSON.stringify(e)})
+  }
+ 
 });
 
 

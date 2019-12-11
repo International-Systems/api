@@ -20,9 +20,27 @@ module.exports = {
     },
     insertJSON: async(json) => {
         return await insertJSON(json);
+    },
+    updateConfig: async(employee) =>{
+        return await updateConfig(employee);
     }
 }
+async function updateConfig(employee){
+   
+    return new Promise(async (resolve) => {
+        let sqlQuery = "UPDATE public.employee_config " 
+        + " SET start_time=$2, finish_time=$3, wk_goal=$4, timezone=$5 "
+        + " WHERE empnum=$1;";
+        const {empnum, start_time, finish_time, wk_goal, timezone} = employee;
+        let values = [empnum, start_time, finish_time, wk_goal, timezone ];
+        console.log(values);
+        resolve(await db.execute(pool, sqlQuery, values));
+    });
 
+
+
+    
+}
 
 async function upsert(empnum, clocknum, empdept, firstname, lastname, address1, address2, city, state, zip, phone, social, worknum, workdate, doctype, paytype, sex, marital, exemptions, rate, specrate, hiredate, termdate, salary, birthday, workmancom, line, xrate, modular, lasttop) {
     return new Promise(async (resolve) => {
