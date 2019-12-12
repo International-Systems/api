@@ -29,7 +29,7 @@ router.get('/employee', async function (req, res, next) {
 });
 
 router.get('/employee/:empnum', async function (req, res, next) {
-  let [employee, scans, historic_earnings] =  await Promise.all([employeeDAO.get(req.params.empnum), scansDAO.getByEmpnum(req.params.empnum), employeeDAO.getEarnings(req.params.empnum)]);
+  let [employee, _scans, historic_earnings] =  await Promise.all([employeeDAO.get(req.params.empnum), scansDAO.getByEmpnum(req.params.empnum), employeeDAO.getEarnings(req.params.empnum)]);
 
 /*
   const currentTimestamp = moment().tz(employee.tz_name).format();
@@ -44,10 +44,23 @@ router.get('/employee/:empnum', async function (req, res, next) {
   console.log("Finish : " + employee.finish_timestamp);
 */
 
+  historic = historic_earnings.map(h => {
+    const date = h.date.toISOString().split('T')[0];
 
-
-  employee["historic_earnings"] = historic_earnings;
-  employee["scans"] = scans
+    const earn = h.earn;
+    const scans = _scans.filter(s => {
+      let sdate = s.end_time.toISOString().split('T')[0];
+      console.log(s.end_time)
+      console.log(sdate + " - " + date)
+      return sdate == date
+    });
+    return {
+      date, 
+      earn, 
+      scans
+    }
+  });
+  employee["historic"] = historic;
   res.send(employee);
 });
 
