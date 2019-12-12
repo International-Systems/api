@@ -14,6 +14,9 @@ const scansDAO = require('../Database/DAO/scans');
 
 const addFP = require('../Others/addFilePerpetual');
 
+
+const moment = require('moment-timezone');
+
 /* INDEX */
 router.get('/', async function (req, res, next) {
   res.send("API - INTERNATIONAL SYSTEMS");
@@ -26,15 +29,31 @@ router.get('/employee', async function (req, res, next) {
 });
 
 router.get('/employee/:empnum', async function (req, res, next) {
-  const ip = req.connection.remoteAddress
-  console.log(ip);
-  var geo = geoip.lookup();
-  console.log(geo);
+  let [employee, scans, historic_earnings] =  await Promise.all([employeeDAO.get(req.params.empnum), scansDAO.getByEmpnum(req.params.empnum), employeeDAO.getEarnings(req.params.empnum)]);
 
-  let employee = await employeeDAO.get(req.params.empnum);
-  employee["historic_earnings"] = await employeeDAO.getEarnings(req.params.empnum)
+/*
+  const currentTimestamp = moment().tz(employee.tz_name).format();
+  const currentDate = currentTimestamp.split('T')[0];
+  console.log("-------------1--------------")
+  console.log("CTimestamp   : " + currentTimestamp);
+  console.log("currentDate  : " + currentDate);
+  employee.start_timestamp = moment(currentDate + "T" + employee.start_time).tz(employee.tz_name).format();
+  employee.finish_timestamp = moment(employee.finish_timestamp).tz(employee.tz_name).format();
+  console.log("-------------2--------------")
+  console.log("Start  : " + employee.start_timestamp);
+  console.log("Finish : " + employee.finish_timestamp);
+*/
+
+
+
+  employee["historic_earnings"] = historic_earnings;
+  employee["scans"] = scans
   res.send(employee);
 });
+
+
+
+
 
 /* OPERATION */
 router.get('/operation', async function (req, res, next) {
@@ -103,12 +122,8 @@ router.get('/complete/bundle', async function (req, res, next) {
     }))
   }))
 
-
-
   res.send(bundleRes.filter(b => b.operations.length > 0));
 });
-
-
 
 
 

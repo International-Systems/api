@@ -84,7 +84,7 @@ async function clear() {
 
 async function getByEmpnum(empnum) {
     return new Promise(async (resolve) => {
-        let sqlQuery = "SELECT * FROM public.scans WHERE empnum = $1;";
+        let sqlQuery = "SELECT * FROM public.scans_week WHERE empnum = $1;";
         let values = [empnum];
         resolve(await db.execute(pool, sqlQuery, values));
     });
