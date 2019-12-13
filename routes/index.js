@@ -29,38 +29,46 @@ router.get('/employee', async function (req, res, next) {
 });
 
 router.get('/employee/:empnum', async function (req, res, next) {
-  let [employee, _scans, historic_earnings] =  await Promise.all([employeeDAO.get(req.params.empnum), scansDAO.getByEmpnum(req.params.empnum), employeeDAO.getEarnings(req.params.empnum)]);
+  console.log(new Date().toISOString() + "1");
+  let [employee, _scans] =  await Promise.all([employeeDAO.get(req.params.empnum), scansDAO.getByEmpnum(req.params.empnum)]);
+  console.log(new Date().toISOString() + "2");
+  let historic = [];
 
-/*
-  const currentTimestamp = moment().tz(employee.tz_name).format();
-  const currentDate = currentTimestamp.split('T')[0];
-  console.log("-------------1--------------")
-  console.log("CTimestamp   : " + currentTimestamp);
-  console.log("currentDate  : " + currentDate);
-  employee.start_timestamp = moment(currentDate + "T" + employee.start_time).tz(employee.tz_name).format();
-  employee.finish_timestamp = moment(employee.finish_timestamp).tz(employee.tz_name).format();
-  console.log("-------------2--------------")
-  console.log("Start  : " + employee.start_timestamp);
-  console.log("Finish : " + employee.finish_timestamp);
-*/
+    for(let i = 0;i < _scans.length;i++){
+      let s = _scans[i];
+      let date = s.end_time.toISOString().split('T')[0];
+      let scan = {
+        bundle:     s.bundle,
+        operation:  s.operation,
+        quantity:   s.quantity,
+        ticket:     s.ticket,
+        start_time: s.start_time.toISOString().substr(11, 8),
+        end_time:   s.end_time.toISOString().substr(11, 8),
+        value:      s.value,
+        duration:   s.duration
+      }
 
-  historic = historic_earnings.map(h => {
-    const date = h.date.toISOString().split('T')[0];
+      //Check if date exists
+      //And add the item
+      // console.log(":-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:" + s.ticket + ":-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:" );
+      let haveDate = false;
+      for(let i = 0;i < historic.length;i++){
+        // console.log(historic[i].date + " - " + date);
+        if(historic[i].date == date){
+          haveDate = true;
+          historic[i].scans.push(scan);
+        }
+      }
 
-    const earn = h.earn;
-    const scans = _scans.filter(s => {
-      let sdate = s.end_time.toISOString().split('T')[0];
-      console.log(s.end_time)
-      console.log(sdate + " - " + date)
-      return sdate == date
-    });
-    return {
-      date, 
-      earn, 
-      scans
+      //Check if item doesnt exist
+      if(!haveDate){
+        historic.push({date, scans:[scan]})
+      }
+    
     }
-  });
+    
   employee["historic"] = historic;
+  console.log(new Date().toISOString() + "3");
   res.send(employee);
 });
 
