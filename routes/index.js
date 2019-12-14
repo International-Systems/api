@@ -41,6 +41,7 @@ router.get('/employee/:empnum', async function (req, res, next) {
   employee.finish_timestamp = moment.tz(current_time.split('T')[0] + 'T' + employee.finish_time, employee.tz_name).format(); 
 
   employee.salary_today = 0;
+  employee.current_hr_today = 0;
 
 
   for (let i = 0; i < _scans.length; i++) {
