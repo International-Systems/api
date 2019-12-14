@@ -28,6 +28,8 @@ router.get('/employee', async function (req, res, next) {
   res.send(await employeeDAO.getAll());
 });
 
+
+
 router.get('/employee/:empnum', async function (req, res, next) {
 
   let [employee, _scans] = await Promise.all([employeeDAO.get(req.params.empnum), scansDAO.getByEmpnum(req.params.empnum)]);
@@ -71,12 +73,15 @@ router.get('/employee/:empnum', async function (req, res, next) {
       if (historic[i].date == date) {
         haveDate = true;
         historic[i].scans.push(scan);
+        historic[i].value += scan.value;
+        historic[i].avg = historic[i].value/8
+        historic[i].efficiency = historic[i].avg / employee.rate
       }
     }
 
     //Check if item doesnt exist
     if (!haveDate) {
-      historic.push({ date, scans: [scan] })
+      historic.push({ date, scans: [scan], avg: scan.value/8, value: scan.value, efficiency: (scan.value/8)/ employee.rate })
     }
 
   }
